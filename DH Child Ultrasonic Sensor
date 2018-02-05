@@ -28,16 +28,16 @@ metadata {
 	tiles(scale: 2) {
 		multiAttributeTile(name: "Ultrasonic", type: "generic", width: 6, height: 4, canChangeIcon: true) {
 			tileAttribute("device.ultrasonic", key: "PRIMARY_CONTROL") {
-				attributeState("ultrasonic", label: '${currentValue} ${unit}', unit:"%", defaultState: true, 
+				attributeState("ultrasonic", label: '${currentValue}%', unit:"%", defaultState: true, 
 						backgroundColors: [
-							[value: 9, color: "#767676"],
-							[value: 315, color: "#ffa81e"],
-							[value: 1000, color: "##d04e00"]
+							[value: 80, color: "#767676"],
+							[value: 50, color: "#ffa81e"],
+							[value: 20, color: "#d04e00"]
 						])
 			}
-		}
-        valueTile("liters", "device.liters", width: 2, height: 2) {
-        state "val", label:'${currentValue}', defaultState: true
+            tileAttribute ("device.liters", key: "SECONDARY_CONTROL") {
+        		attributeState "power", label:'Water capacity: ${currentValue} liters', icon: "http://cdn.device-icons.smartthings.com/Bath/bath6-icn@2x.png"
+            }    
 		}
     }
     
@@ -50,8 +50,8 @@ metadata {
 def parseValue(String namebase,String value){
     //results.each { name, value ->
         //Parse events and optionally create SmartThings events
-    log.debug "This event happened parse1 ${value}"
-	  def sensorValue = value as float
+    //log.debug "This event happened parse1 ${value}"
+    def sensorValue = value as float
     def volume = 3.14159 * (diameter/2) * (diameter/2) * height
     def capacityLiters = volume / 1000 * 2
     sendEvent(name: "liters", value: capacityLiters)

@@ -1,0 +1,64 @@
+/**
+ *  Child Ultrasonic Sensor
+ *
+ *  Copyright 2017 Daniel Ogorchock
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License. You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+ *  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing permissions and limitations under the License.
+ *
+ *  Change History:
+ *
+ *    Date        Who            What
+ *    ----        ---            ----
+ *   
+ *
+ * 
+ */
+metadata {
+	definition (name: "Child Ultrasonic Sensor", namespace: "ogiewon", author: "Daniel Ogorchock") {
+		capability "Sensor"
+	}
+
+	tiles(scale: 2) {
+		multiAttributeTile(name: "Ultrasonic", type: "generic", width: 6, height: 4, canChangeIcon: true) {
+			tileAttribute("device.ultrasonic", key: "PRIMARY_CONTROL") {
+				attributeState("ultrasonic", label: '${currentValue} ${unit}', unit:"%", defaultState: true, 
+						backgroundColors: [
+							[value: 9, color: "#767676"],
+							[value: 315, color: "#ffa81e"],
+							[value: 1000, color: "##d04e00"]
+						])
+			}
+		}
+        valueTile("liters", "device.liters", width: 2, height: 2) {
+        state "val", label:'${currentValue}', defaultState: true
+		}
+    }
+    
+    preferences {
+        input name: "height", type: "number", title: "Height", description: "Enter height of tank in cm", required: true
+        input name: "diameter", type: "number", title: "Diameter", description: "Enter radius of tank", required: true
+    }
+}
+
+def parseValue(String namebase,String value){
+    //results.each { name, value ->
+        //Parse events and optionally create SmartThings events
+    log.debug "This event happened parse1 ${value}"
+	  def sensorValue = value as float
+    def volume = 3.14159 * (diameter/2) * (diameter/2) * height
+    def capacityLiters = volume / 1000 * 2
+    sendEvent(name: "liters", value: capacityLiters)
+    def capacityValue = 100 - (sensorValue/height * 100 )
+    if(capacityValue != 100)
+    {
+    	sendEvent(name: namebase, value: capacityValue)
+    }
+    return true
+}
